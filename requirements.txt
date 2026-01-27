@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+requests
+pydantic
+redis
+python-dotenv
+langchain
+PyJWT
+aiohttp
+langchain_openai
+langchain_redis
+langchain_core
+langgraph

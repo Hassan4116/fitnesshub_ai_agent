@@ -1,0 +1,21 @@
+import os
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+SESSION_TTL = int(os.getenv("SESSION_TTL", 3600))
+
+llm_main = ChatOpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    model="openai/gpt-4o-mini",
+    temperature=0.7,
+    max_tokens=300,
+)
+
+llm_fallback = ChatOpenAI(
+    model="gpt-4o-nano",
+    temperature=0.7,
+    max_tokens=300,
+)
