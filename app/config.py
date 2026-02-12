@@ -8,8 +8,6 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 SESSION_TTL = int(os.getenv("SESSION_TTL", 3600))
 
 llm_main = ChatOpenAI(
-    #base_url="https://openrouter.ai/api/v1",
-    #model="openai/gpt-4o-mini",
     base_url="https://api.groq.com/openai/v1",
     model="llama-3.3-70b-versatile",
     temperature=0.7,
