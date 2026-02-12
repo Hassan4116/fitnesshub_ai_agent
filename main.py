@@ -16,10 +16,8 @@ agent = build_agent()
 
 
 @app.post("/chat")
-async def chat(req: ChatRequest):
-    # Use a default user ID for testing (remove this and add authentication back later)
-    user_id = "default_user"
-    session_id = get_or_create_session(user_id)
+async def chat(req: ChatRequest, user=Depends(get_current_user)):
+    session_id = get_or_create_session(user["id"])
 
     state = load_state(session_id) or {
         "history": [],
