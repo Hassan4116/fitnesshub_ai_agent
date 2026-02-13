@@ -1,8 +1,8 @@
-from langgraph.graph import StateGraph, END, START
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from app.state import AgentState
-from app.config import llm_main, llm_fallback
+from app.config import get_llm_main, get_llm_fallback
+
 # System prompt that goes to LLM
 PROMPT = """
 You are a professional gym, fitness, and nutrition assistant.
@@ -17,7 +17,7 @@ Rules:
 
 def fitness_assistant_node(state: AgentState):
     """
-    Single node that:
+    Single function that:
     - reads history
     - enforces system prompt
     - appends new messages
@@ -30,18 +30,16 @@ def fitness_assistant_node(state: AgentState):
     ]
     
     try:
-
-        response = llm_main.invoke(messages)
+        response = get_llm_main().invoke(messages)
     except Exception as e:
         print("[fitness_assistant_node] Primary LLM failed, using fallback:", e)
-        response = llm_fallback.invoke(messages)
-
+        response = get_llm_fallback().invoke(messages)
 
     # Step 2: Summarize history if too long
     history = state.get("history", [])
     if len(history) > 20:  # Keep last 20 messages fully
         try:
-            summary_response = llm_main.invoke([
+            summary_response = get_llm_main().invoke([
                 SystemMessage(content="Summarize the following chat history concisely, keeping context:"),
                 *history[:-20]
             ])
@@ -62,12 +60,11 @@ def fitness_assistant_node(state: AgentState):
     }
 
 def build_agent():
-    graph = StateGraph(AgentState)
-
-    graph.add_node("fitness_assistant", fitness_assistant_node)
-    graph.add_edge(START, "fitness_assistant")
-    graph.add_edge("fitness_assistant", END)
-
-
-    return graph.compile()
+    """
+    Returns a simple function that acts as the agent without langgraph.
+    """
+    def agent_function(state: AgentState):
+        return fitness_assistant_node(state)
+    
+    return agent_function
 

@@ -4,7 +4,10 @@ from pydantic import BaseModel
 from app.auth import get_current_user
 from app.session import get_or_create_session
 from app.agent.build_agent import build_agent
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 app = FastAPI(title="Fitness Hub AI Agent")
 
@@ -26,7 +29,8 @@ async def chat(req: ChatRequest, user=Depends(get_current_user)):
 
     state["query"] = req.message
 
-    result = await agent.ainvoke(state)
+    # Call the agent function directly (no longer using langgraph)
+    result = agent(state)
 
     save_state(session_id, result)
 
